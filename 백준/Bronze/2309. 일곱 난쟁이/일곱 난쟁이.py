@@ -1,31 +1,31 @@
-dwrf_list = []
+import sys
+read = sys.stdin.readline
+
+sum = 0 
+num_list = []
 for i in range(9):
-    dwrf = int(input())
-    dwrf_list.append(dwrf)
+    num = int(read().strip())
+    num_list.append(num)
+    sum+=num_list[i]
+rmn = sum - 100
 
-#dwrf_list.sort()
+for i in range(len(num_list)):
+    for j in range(len(num_list)-1-i):
+        if num_list[j]>num_list[j+1]:
+            num_list[j], num_list[j+1] = num_list[j+1], num_list[j]
 
-
-fin_dwrf_list = []
-tot_hght = 0
-dwf_idx1 = -1
-dwf_idx2 = -1
+idx1=-1
+idx2=-1
+for i in range(9):
+    for j in range(i+1, 9):
+        temp = num_list[i]
+        temp += num_list[j]
+        if temp == rmn:
+            idx1=i
+            idx2=j
 
 for i in range(9):
-    tot_hght += dwrf_list[i]
+    if i == idx1 or i==idx2:
+        continue
+    print(num_list[i])
 
-found_match = False
-for i in range(9):
-    for j in range(i+1,9):
-        if dwrf_list[i] + dwrf_list[j] == tot_hght - 100:
-            found_match = True
-            dwrf_list.remove(dwrf_list[j])
-            dwrf_list.remove(dwrf_list[i])
-            break
-    #이미 위에서 for 문을 빠져나왔는데, 또 빠져나와야할까?
-    if found_match:
-        break
-
-
-dwrf_list.sort()
-print(*dwrf_list, sep = "\n")    
