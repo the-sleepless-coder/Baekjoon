@@ -1,32 +1,32 @@
-n = int(input())
-giv_string = list(map(int, input().split()))
+import sys
+read = sys.stdin.readline
 
-m = int(input())
-key_string = list(map(int, input().split()))
+num1 = int(read().strip())
+find_list = list(map(int,read().strip().split()))
+find_list.sort()
 
-giv_string.sort()
+num2 = int(read().strip())
+num_list = list(map(int,read().strip().split()))
 
-for i in range(m):
+for i in range(len(num_list)):
     pl = 0
-    pr = n-1
-    isExist = False
-    
-    while pl <= pr:
+    pr = len(find_list)-1    
+    while pl<=pr:
         pc = (pl+pr)//2
-        if giv_string[pc] == key_string[i]:
-            isExist = True
+        if num_list[i] == find_list[pc]:
             print(1)
             break
-        elif giv_string[pc] < key_string[i]:
-            pl = pc + 1
-        else:
-            pr = pc -1
+        elif num_list[i]>find_list[pc]:
+            pl = pc+1
+        elif num_list[i]<find_list[pc]:
+            pr = pc-1
+            
+        if pl>pr:
+            print(0)
+            break
     
-    if not isExist:
-        print(0)
+    
 
         
-        
 
-
-        
+    
