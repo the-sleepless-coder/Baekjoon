@@ -1,66 +1,50 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner;
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.*;
 
 public class Main {
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
-        int N = Integer.parseInt(sc.nextLine());
-        List<crdns> coordinates = new ArrayList<>();
-        for(int i=0; i < N; i++){
-            int x = sc.nextInt();
-            int y = sc.nextInt();
-            coordinates.add(new crdns(x, y));
+        int N = Integer.parseInt(st.nextToken());
+
+        int[][] arr = new int[N][2];
+        for(int i = 0; i < N; i++){
+            st = new StringTokenizer(br.readLine());
+            arr[i][0] = Integer.parseInt(st.nextToken());
+            arr[i][1] = Integer.parseInt(st.nextToken());
         }
 
+        // System.out.println(Arrays.deepToString(arr));
 
+        // arr 내 각 객체에 대해서,
+        // x의 값이 같다면 y의 값에 따라서 오름차순 정렬하고
+        // 그렇지 않다면 기본적으로 x의 값에 따라서 정렬한다.
 
-        // Comparator 및 Lambda식을 이용한 정렬
-        coordinates.sort((c1, c2) -> {
-            // x가 동일하다면 y 기준 오름차순
-            if(c1.getX() == c2.getX()){
-               return c1.getY() - c2.getY();
-           }
+        // sort내 구현 돼 있는 함수가 1개 밖에 없을 때, 함수형 인터페이스에 대해서 추상 메서드를 람다식으로 overriding 해서 해당 함수를 구현할 수 있다.
+        Arrays.sort(arr,
+                (o1, o2) -> {
+                    if (o1[0] == o2[0]) {
+                        return o1[1] - o2[1];
+                    }
+                    return o1[0] - o2[0];
+                }
+        );
 
-           // 기본적으로는 x 오름차순으로 정렬한다.
-           return c1.getX() - c2.getX();
-        });
+        // System.out.println(Arrays.deepToString(arr));
+        StringBuilder sb = new StringBuilder();
 
-        // System.out.println(coordinates);
-
-        for(int i=0; i<N; i++){
-            System.out.println(coordinates.get(i));
+        for(int[] row: arr){
+            sb.append(row[0]).append(" ").append(row[1]).append("\n");
+            //System.out.printf("%d %d",row[0], row[1]);
+            //System.out.println();
         }
+
+        System.out.println(sb);
     }
-
-
-    public static class crdns{
-        int x;
-        int y;
-
-        public crdns(int x, int y){
-            this.x = x;
-            this.y = y;
-        }
-
-        public int getX(){
-            return x;
-        }
-
-        public int getY(){
-            return y;
-        }
-
-        @Override
-        public String toString() {
-            return x + " " + y;
-        }
-    }
-
-
-
 
 
 }
