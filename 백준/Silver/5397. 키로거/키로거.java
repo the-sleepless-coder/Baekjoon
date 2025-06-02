@@ -5,69 +5,67 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        // < : idx를 줄일 수 있다면 줄인다.
-        // > : idx를 늘릴 수 있다면 늘린다.
-        // - : idx 이전의 문자를 삭제하고, idx를 줄이고 생성된 문자열의 길이 totIdx를 줄인다.
-        //   : idx 이전의 문자가 존재하지 않는다면 처리되지 않도록 한다.
-        // 알파벳, 숫자 : 알파벳이나 숫자를 추가하고, idx를 늘리고 생성된 문자열의 길이 totIdx를 늘린다.
-
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int testCase = Integer.parseInt(br.readLine());
 
-        for(int tc =0; tc<testCase; tc++){
-            String str = br.readLine();
-            int len = str.length();
+        int N = Integer.parseInt(br.readLine());
 
-            LinkedList<Character> list = new LinkedList<>();
+        String[] arr = new String[N];
+        for(int i=0; i < N; i++){
+            arr[i] = br.readLine();
 
-            int idx = 0;
-            int totIdx = 0;
-            for(int i=0; i < len ; i++){
-                if(str.charAt(i)=='<'){
-                    if(idx == 0){
+            // Stack<Character> front = new Stack<>();
+            Deque<Character> front = new ArrayDeque<>();
+            Deque<Character> back = new ArrayDeque<>();
+
+            char[] charArray = arr[i].toCharArray();
+            for(char c: charArray){
+                // front에 문자가 존재한다면, 앞에 있는 문자를 뒤로 보낸다.
+                if(c=='<'){
+                    if(front.isEmpty()){
                         continue;
-                    }else{
-                        idx--;
+                    }
+                    else{
+                        char temp = front.pollLast();
+                        back.addFirst(temp);
                     }
                 }
-                else if(str.charAt(i)=='>'){
-                    if(idx == totIdx){
+                // back에 문자가 존재한다면, 뒤에 있는 문자를 앞으로 보낸다.
+                else if (c=='>') {
+                    if (back.isEmpty()) {
+                        continue;
+                    } else {
+                        char temp = back.pollFirst();
+                        front.addLast(temp);
+                    }
+                }
+                // 커서 앞에 문자가 존자한다면 삭제한다.
+                else if(c=='-'){
+                    if(front.isEmpty()){
                         continue;
                     }else{
-                        idx++;
+                        front.pollLast();
                     }
-
-                }else if(str.charAt(i)=='-'){
-                    if(idx != 0){
-                        list.remove(idx-1);
-                        idx--;
-                        totIdx--;
-                    }
-
-                }else{
-                    list.add(idx, str.charAt(i));
-                    //System.out.printf("%d %s\n", idx, str.charAt(i));
-                    idx++;
-                    totIdx++;
                 }
-
-                //System.out.println(list);
-
+                // 그 외 문자는 front의 뒤에 더해준다.
+                else{
+                    front.addLast(c);
+                }
             }
 
             StringBuilder sb = new StringBuilder();
-            for(char c: list){
-                sb.append(c);
+            while(!front.isEmpty()){
+                sb.append(front.pollFirst());
             }
+
+            while(!back.isEmpty()){
+                sb.append(back.pollFirst());
+            }
+
+            //System.out.println(front);
+            // System.out.println(back);
             System.out.println(sb);
 
-            //System.out.println(list);
-
         }
-
-
-
-
 
 
     }
