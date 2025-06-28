@@ -27,10 +27,13 @@ public class Main {
             }
             // arr과 stack의 숫자가 같지 않다면 stack에 숫자를 더해준다.
             if(arr[idx] != s.peek()){
+                // stack의 숫자가 arr보다 작을 때만 +을 더해준다.
                 if(s.peek() < arr[idx]){
                     s.add(++num);
                     sb.append("+").append("\n");
-                }else if(s.peek() > arr[idx]){
+                }
+                // stack의 숫자가 arr보다 크면 break 해준다.
+                else if(s.peek() > arr[idx]){
                     isStack = false;
                     break;
                 }
