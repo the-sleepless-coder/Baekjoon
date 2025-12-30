@@ -28,19 +28,18 @@ public class Solution {
             // 전체 제어 흐름에서 어떻게 반복문과 조건문을 설정해서 제어 논리를 작성할지를 생각하면 된다.
             int max = 1;
             for(int row = 0; row < S; row++) {
-                for(int num=1; num <= S; num++){
+                for(int len=1; len <= S; len++){
 
-                        for(int idx=0; idx<S; idx++){
+                        for(int start = 0; start <= S - len; start++){
                             boolean isPalindrome = true;
                             int count = 0;
-                            for (int col = 0; col < num; col++) {
-                                if(idx+col<S && idx+num-1-col<S){
-                                    if(graph[row][idx + col] != graph[row][ idx + num - 1 - col]){
-                                        isPalindrome = false;
-                                        break;
-                                    }
-                                    count++;
+                            for (int col = 0; col < len; col++) {
+                                if(graph[row][start + col] != graph[row][ start + len - 1 - col]){
+                                    isPalindrome = false;
+                                    break;
                                 }
+                                count++;
+
                             }
 
                             if(isPalindrome){
@@ -53,22 +52,19 @@ public class Solution {
 
             }
 
-
             for(int col = 0; col < S; col++) {
-                for(int num=1; num <= S; num++){
+                for(int len=1; len <= S; len++){
 
-                    for(int idx=0; idx<S; idx++){
+                    for(int start=0; start <= S - len; start++){
                         boolean isPalindrome = true;
                         int count = 0;
-                        for (int row = 0; row < num; row++) {
-
-                            if(idx+row<S && idx + num - 1 - row < S){
-                                if(graph[idx + row][col] != graph[idx + num-1-row][ col ]){
-                                    isPalindrome = false;
-                                    break;
-                                }
-                                count++;
+                        for (int row = 0; row < len; row++) {
+                            if(graph[start + row][col] != graph[start + len-1-row][ col ]){
+                                isPalindrome = false;
+                                break;
                             }
+                            count++;
+
                         }
 
                         if(isPalindrome){
@@ -80,7 +76,7 @@ public class Solution {
                 }
             }
 
-            System.out.printf("#%d %d\n", testCase ,max);
+            System.out.printf("#%d %d\n",testCase, max);
 
 
             // 일단 기본적으로 피드백 받은 사항에 대해서 마무리하자.
