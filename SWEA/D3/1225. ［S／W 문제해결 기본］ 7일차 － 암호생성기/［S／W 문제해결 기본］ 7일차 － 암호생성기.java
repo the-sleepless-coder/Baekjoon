@@ -15,9 +15,16 @@ public class Solution {
 
             // 앞에서 빠지고 뒤에 들어갈 수 있게 arraydeque을 쓴다.
             Deque<Integer> deq = new ArrayDeque<>();
-
+            int min = Integer.MAX_VALUE;
             for(int idx = 0; idx<N; idx++){
                 int num = sc.nextInt();
+                min = Math.min(min, num);
+                deq.add(num);
+            }
+            for(int idx = 0; idx<N; idx++){
+                int num = deq.pollFirst();
+                int k = min/GCD;
+                num = num - (k-1) * GCD;
                 deq.add(num);
             }
 
