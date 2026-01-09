@@ -4,51 +4,56 @@ import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 public class Main {
-    public static int[] arr;
-    public static boolean[] visited;
-    public static StringBuilder sb = new StringBuilder();
-
+    // 한번 탐색을 하고 나서 해당 깊이에 도달했으면 출력하고,
+    // 다시 이전 깊이에서 탐색을 이어나간다.
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
 
         int N = Integer.parseInt(st.nextToken());
-        int M = Integer.parseInt(st.nextToken());
+        int R = Integer.parseInt(st.nextToken());
 
-        // 결과 값을 담을 arr 그리고 어떤 요소를 방문했는지를 보여줄 visited배열을 만든다.
-        arr = new int[M];
-        visited = new boolean[N];
+        boolean[] visited = new boolean[N];
+        int[] path = new int[R];
 
-        dfs(N, M, 0);
+        StringBuilder sb = new StringBuilder();
+
+        backtrack(N, R, visited, path, 0, sb);
         System.out.println(sb);
-
     }
 
-    public static void dfs(int N, int M, int depth){
-        // 해당 깊이에 도달하면 배열에 있는 요소를 모두 출력한다.
-        if(depth == M){
-            for(int num : arr){
-                sb.append(num).append(" ");
+
+    public static void backtrack(int N, int R, boolean[] visited, int[] path, int depth, StringBuilder sb){
+        // depth가 R에 도달했을 때,
+        // 해당 숫자를 출력한다.
+        if(depth==R){
+            for(int i=0; i<R; i++){
+                sb.append(path[i]).append(" ");
             }
             sb.append("\n");
+
+            // 함수가 여기에서 종료가 돼야,
+            // 다시 이전 depth로 돌아가서 탐색을 할 수 있다.
             return;
         }
 
-        // 방문하지 않은 요소에 대해서 arr배열에 해당 숫자를 넣어주고,
-        // dfs재귀함수를 돌면서 백트래킹을 실행해서 각 요소를 처리하고 다시 돌아오는 작업을 반복한다.
-        // 특히 백트래킹에서 중요한 것은, 재귀함수를 나오면서 처리한 해당 요소를 다시 false로 만드는 것이다.
-        // 그렇게 해야 다른 요소로 해당 처리된 요소를 다시 방문할 때, 해당 경우를 처리할 수 있으니까 말이다.
-        // ex. 1 - 2, 1 - 3, 1- 4 // 2- 3, 2 - 4 같이 false처리를 하고 나와야 다른 요소에서 해당 요소를 다시 처리할 수 있다.
-        for(int i = 0; i < N ; i++){
+        for(int i=0; i<N; i++){
+            // 방문하지 않는 숫자에 대한 방문.
+            // 깊이를 늘려가며 방문 후,
+            // 해당 깊이 방문하고 나서 다시 뒤로 한단계 빠져서 다시 탐색 진행
+
+            // 해당 depth마다 path에 값을 넣어야 한다.
+
             if(!visited[i]){
                 visited[i] = true;
-                arr[depth] = i+1;
-                dfs(N, M, depth+1);
-
+                path[depth] = i+1;
+                backtrack(N, R, visited, path, depth+1, sb);
                 visited[i] = false;
             }
+
         }
 
     }
 
 }
+
