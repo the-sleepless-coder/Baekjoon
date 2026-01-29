@@ -1,19 +1,20 @@
 import java.util.*;
+import java.io.*;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         Scanner sc = new Scanner(System.in);
-        int N = sc.nextInt();
-        sc.nextLine();
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int N = Integer.parseInt(br.readLine());
 
         // 노드의 앞 뒤 선후 관계 주소를 이어 붙일 수 있게 Node 배열을 만든다.
         Node[] head = new Node[N];
         Node[] tail = new Node[N];
         boolean[] headList = new boolean[N];
         for(int idx=0; idx<N; idx++){
-            String s = sc.next();
+            String s = br.readLine();
             Node n = new Node(s);
 
             head[idx] = n;
@@ -23,8 +24,9 @@ public class Main {
 
         int[][] nameChange = new int[N-1][2];
         for(int idx=0; idx<N-1; idx++){
-            nameChange[idx][0] = sc.nextInt()-1;
-            nameChange[idx][1] = sc.nextInt()-1;
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            nameChange[idx][0] = Integer.parseInt(st.nextToken())-1;
+            nameChange[idx][1] = Integer.parseInt(st.nextToken())-1;
         }
 
         // aIdx뒤로 bIdx가 있다는 사실을 Node를 통해 기록한다.
