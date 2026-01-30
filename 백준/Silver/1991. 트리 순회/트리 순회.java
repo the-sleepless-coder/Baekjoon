@@ -1,130 +1,137 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
 public class Main {
-    static class Node{
-        String parent;
-        Node left;
-        Node right;
-
-        public Node(String parent){
-            this.parent = parent;
-        }
-
-        public String getParent(){
-            return parent;
-        }
-
-        public void setParent(String parent){
-            this.parent = parent;
-        }
-
-        public Node getLeft(){
-            return left;
-        }
-
-        public void setLeft(Node left) {
-            this.left = left;
-        }
-
-        public Node getRight(){
-            return right;
-        }
-
-        public void setRight(Node right){
-            this.right = right;
-        }
-
-    }
-
-    // String으로 받은 값을 이용해서, Node를 찾기 위해 만든 Hashmap
-    static Map<String, Node> nodeMap = new HashMap<>();
-
-    static Node createOrGetNode(String key){
-        if(nodeMap.containsKey(key)){
-            return nodeMap.get(key);
-        }else{
-            Node newNode = new Node(key);
-            nodeMap.put(key, newNode);
-            return newNode;
-        }
-
-    }
-
-    static void preorder(Node cur, StringBuilder sb){
-        if(cur==null) return;
-
-        sb.append(cur.parent);
-        preorder(cur.left, sb);
-        preorder(cur.right, sb);
-    }
-
-    static void inorder(Node cur, StringBuilder sb){
-        if (cur == null) return;
-
-        inorder(cur.left, sb);
-        sb.append(cur.parent);
-        inorder(cur.right, sb);
-
-    }
-
-    static void postorder(Node cur, StringBuilder sb){
-        if(cur == null) return;
-
-        postorder(cur.left, sb);
-        postorder(cur.right, sb);
-        sb.append(cur.parent);
-
-    }
-
-
-
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N = Integer.parseInt(br.readLine());
 
-        // 초기 root = null로 설정해준다.
-        Node root = null;
+        String[] valArr = new String[N];
+        String[] leftArr = new String[N];
+        String[] rightArr = new String[N];
 
-        for(int i=0; i < N; i++){
+        // 각 노드별 값, 왼쪽 노드, 오른쪽 노드를 3개의 배열을 통해 표현한다.
+        // 각 배열의 idx에는 각 노드별 값, 왼쪽, 오른쪽 노드의 값을 넣는다.
+        for(int idx=0; idx<N; idx++){
             StringTokenizer st = new StringTokenizer(br.readLine());
-            // parent, left, right String을 받고 -> Node로 만들어준다.
-            String parent = st.nextToken();
+            String val = st.nextToken();
             String left = st.nextToken();
             String right = st.nextToken();
 
-            // HashMap에 존재한다면 . 이 아닌 경우,
-            // parent를 기준으로 left/right String으로 만든 Node를 넣어준다.
-            Node p = createOrGetNode(parent);
-            if(root == null) root = p;
+            if(!val.equals(".")){
+                valArr[idx] = val;
+            }
 
-            if(!left.equals(".")) p.left = createOrGetNode(left);
-            if(!right.equals(".")) p.right = createOrGetNode(right);
+            if(!left.equals(".")){
+                leftArr[idx] = left;
+            }
 
+            if(!right.equals(".")) {
+                rightArr[idx] = right;
+            }
 
         }
 
+        // 노드 형태로 값을 표현한다.
+        // 주어진 알파벳을 이용해서, 해당 Node를 가져올 수 있게 HashMap에 넣어둔다.
+        Map<String, Node> nodesMap = new HashMap<>();
+        for(int idx=0; idx<N; idx++){
+            Node node = new Node(valArr[idx]);
+            nodesMap.put(valArr[idx], node);
+        }
+
+        for(int idx=0; idx<N; idx++) {
+            String val = valArr[idx];
+            Node node = nodesMap.get(val);
+
+            if (leftArr[idx] != null) {
+                node.left = nodesMap.get(leftArr[idx]);
+            }
+
+            if (rightArr[idx] != null) {
+                node.right = nodesMap.get(rightArr[idx]);
+            }
+
+        }
+
+        // 주어진 노드 관계로 전위, 중위, 후위 순회로 트리를 순회한다.
+        // 루트를 시작으로 트리를 순회한다.
+        String startingAlp = "A";
+        Node root = nodesMap.get(startingAlp);
+
         StringBuilder sb = new StringBuilder();
         preorder(root, sb);
-        System.out.println(sb);
-
-        sb.setLength(0);
+        sb.append("\n");
         inorder(root, sb);
-        System.out.println(sb);
-
-        sb.setLength(0);
+        sb.append("\n");
         postorder(root, sb);
-        System.out.println(sb);
 
+        System.out.println(sb);
 
 
     }
+    static class Node{
+        String val;
+        Node left;
+        Node right;
 
+        // 기본 생성자
+        public Node(String val){
+            this.val = val;
+        }
 
+        // 추가 생성자
+        public Node(String val, Node left, Node right){
+            this.val = val;
+            this.left = left;
+            this.right = right;
+        }
+    }
 
+    // 전위 순회
+    // 값, 왼, 오 순으로 출력.
+    // Leaf노드까지 도달하면 return 한다.
+    // 재귀함수를 타고 들어가면서, 계속 sb를 들고 가면서 append를한다.
+    static void preorder(Node node, StringBuilder sb){
+        if(node==null)
+            return;
 
+        sb.append(node.val);
+        preorder(node.left, sb);
+        preorder(node.right, sb);
+
+    }
+
+    // 중위 순회
+    // 왼, 값, 오 순으로 출력
+    // Leaf 노드까지 도달하면 return 한다.
+    static void inorder(Node node, StringBuilder sb){
+        if(node == null)
+            return;
+
+        inorder(node.left, sb);
+        sb.append(node.val);
+        inorder(node.right, sb);
+
+    }
+
+    // 후위순회
+    static void postorder(Node node, StringBuilder sb){
+        if(node==null)
+            return;
+
+        postorder(node.left, sb);
+        postorder(node.right, sb);
+        sb.append(node.val);
+    }
+
+    // 그러니까 각 깊이에서 값, 왼, 오 를 어떤 순서대로 출력할 것인지를 결정하는 것이구나
+    // 중위 순회라고 치면,
+    // * D *
+    // * B *
+    // * A *
+    // * E *
+    // * C *
+    // * F *
+    // * G *
 }
