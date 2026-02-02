@@ -2,28 +2,40 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        int N = sc.nextInt();
-        int K = sc.nextInt();
+    public static void main(String[] args) throws IOException {
+        // char 값을 바이트로 하나씩 받고,
+        // char로 값을 변환하고
+        // 각각의 char값을 buffer에 저장한다.
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
+        String input = br.readLine();
+        // String 반환, Integer로 형 변환.
+        StringTokenizer st = new StringTokenizer(input);
+        int N  = Integer.parseInt(st.nextToken());
+        int K = Integer.parseInt(st.nextToken());
+
+        // ,로 구분된다면 String으로 받은 input을 regex로 구분.
+        // 공백을 기준으로 구분되는 string을 token 단위로 받고,
+        // arr에 값을 입력 받는다.
         int[] arr = new int[N];
+        st = new StringTokenizer(br.readLine());
         for(int idx=0; idx<N; idx++){
-            arr[idx] = sc.nextInt();
+            arr[idx] = Integer.parseInt(st.nextToken());
         }
 
         int[] result = new int[2];
         int count = bubbleSort(arr, result, K);
 
+        StringBuilder sb = new StringBuilder();
+
         if(count<K){
             count = -1;
-            System.out.println(count);
+            sb.append(count);
         }else{
-            System.out.printf("%d %d", result[0], result[1]);
+            sb.append(result[0]).append(" ").append(result[1]);
         }
 
-
-
+        System.out.println(sb);
 
     }
 
