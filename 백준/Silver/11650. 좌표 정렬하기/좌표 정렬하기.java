@@ -1,50 +1,72 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int N =  sc.nextInt();
 
-        int N = Integer.parseInt(st.nextToken());
+        // crd 객체로 숫자를 저장한다.
+        ArrayList<CRD> crdList = new ArrayList<>();
 
-        int[][] arr = new int[N][2];
-        for(int i = 0; i < N; i++){
-            st = new StringTokenizer(br.readLine());
-            arr[i][0] = Integer.parseInt(st.nextToken());
-            arr[i][1] = Integer.parseInt(st.nextToken());
+        for(int idx=0; idx<N; idx++){
+            int x= sc.nextInt();
+            int y= sc.nextInt();
+
+            CRD crd = new CRD(x, y);
+            crdList.add(crd);
         }
 
-        // System.out.println(Arrays.deepToString(arr));
+        // ArrayList에서 주어진 lambda식을 이용해서 기준대로 정렬하기.
 
-        // arr 내 각 객체에 대해서,
-        // x의 값이 같다면 y의 값에 따라서 오름차순 정렬하고
-        // 그렇지 않다면 기본적으로 x의 값에 따라서 정렬한다.
+        // Comparator 및 Lambda식을 이용한 정렬
+        // c1<c2 = 음수, c1>c2 = 양수.
+        // 그냥 숫자를 빼는 것보다 Integer.compare함수를 쓰는 것이 IntegerOverflow가 안 나게 하는 데 있어서 도움 된다.
+        crdList.sort((c1, c2)->{
+            // 기본적으로 X오름차순.
+            if(c1.getX()!=c2.getX()){
+                return Integer.compare(c1.getX(), c2.getX());
+           }else{
+            // X가 같다면 Y 오름차순.
 
-        // sort내 구현 돼 있는 함수가 1개 밖에 없을 때, 함수형 인터페이스에 대해서 추상 메서드를 람다식으로 overriding 해서 해당 함수를 구현할 수 있다.
-        Arrays.sort(arr,
-                (o1, o2) -> {
-                    if (o1[0] == o2[0]) {
-                        return o1[1] - o2[1];
-                    }
-                    return o1[0] - o2[0];
-                }
-        );
+            return Integer.compare(c1.getY(), c2.getY());
+           }
+        });
 
-        // System.out.println(Arrays.deepToString(arr));
+        // 가변 객체로서 sb활용.
         StringBuilder sb = new StringBuilder();
+        for(int idx=0; idx<N; idx++){
+            CRD temp = crdList.get(idx);
 
-        for(int[] row: arr){
-            sb.append(row[0]).append(" ").append(row[1]).append("\n");
-            //System.out.printf("%d %d",row[0], row[1]);
-            //System.out.println();
+            int X = temp.getX();
+            int Y = temp.getY();
+            sb.append(X).append(" ").append(Y);
+            if(idx!=N-1)
+                sb.append("\n");
         }
 
         System.out.println(sb);
+
     }
 
 
+    static class CRD{
+        int x;
+        int y;
+
+        public CRD(int x, int y){
+            this.x = x;
+            this.y = y;
+        }
+
+        public int getX(){
+            return x;
+        }
+
+        public int getY(){
+            return y;
+        }
+    }
+
 }
+// x좌표가 증가하는 순으로,
+// x좌표가 같으면 y좌표가 증가하는 순으로 정렬한다.
