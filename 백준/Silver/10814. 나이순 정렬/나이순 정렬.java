@@ -3,33 +3,38 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
+        int tot = sc.nextInt();
 
-        // Person 클래스를 만들어서, 나이 및 이름 입력값을 받는다.
-        int N = Integer.parseInt(sc.nextLine());
-        ArrayList<Person> arr = new ArrayList<>();
-        for(int i = 0; i < N; i++){
-            int age = sc.nextInt();
+        ArrayList<Person> personList = new ArrayList<>();
+        for(int idx=0; idx<tot; idx++){
+
+            int age=sc.nextInt();
             String name = sc.next();
-            Person p = new Person(age, name);
-            arr.add(p);
+
+            Person p = new Person(age, name, idx+1);
+            personList.add(p);
+
         }
 
+        //나이 다르면 나이 순서대로,
+        // 나이가 같다면 가입 순서대로 정려한다.
+        personList.sort((p1, p2)->{
+            if(p1.age != p2.age){
+                return Integer.compare(p1.age,p2.age);
+            }else{
+                return Integer.compare(p1.pos, p2.pos);
+            }
 
-        // 2개의 Person 객체에 대해서, 나이를 기준으로 오름차순으로 정렬한다.
-        arr.sort((o1, o2)-> o1.age - o2.age);
+        });
 
         StringBuilder sb = new StringBuilder();
-        for(int i=0; i<arr.size(); i++){
-            int age = arr.get(i).age;
-            String name = arr.get(i).name;
-
-            sb.append(age);
-            sb.append(" ");
-            sb.append(name);
-            if(i!=arr.size()-1)
-                sb.append("\n");
+        int N = personList.size();
+        for(int idx=0; idx<N; idx++){
+           Person temp = personList.get(idx);
+           sb.append(temp.age).append(" ").append(temp.name);
+           if(idx!=N-1)
+            sb.append("\n");
         }
-
         System.out.println(sb);
 
     }
@@ -37,22 +42,25 @@ public class Main {
     static class Person{
         int age;
         String name;
+        int pos;
 
-        public Person(){
-
-        }
-
-        public Person(int age, String name){
+        public Person(int age, String name, int pos){
             this.age = age;
             this.name = name;
+            this.pos = pos;
         }
 
-        @Override
-        public String toString() {
-            return "Person{" +
-                    "age=" + age +
-                    ", name='" + name + '\'' +
-                    '}';
+        public int getAge(){
+            return this.age;
         }
+
+        public String getName(){
+            return this.name;
+        }
+
     }
+
 }
+
+// 나이가 증가하는 순으로,
+// 나이가 같으면 먼저 가입한 사람이 앞에 오는 순서로 정렬한다.
