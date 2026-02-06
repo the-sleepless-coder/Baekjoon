@@ -1,10 +1,10 @@
 import java.util.*;
+import java.io.*;
 
 public class Main {
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        String input = sc.nextLine();
-
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String input = br.readLine();
         // 아스키 코드를 기준으로 alphabaet을 0~25로 만들었을 때,
         // 각각 몇 개씩 들어가는지 세 본다.
         int N=26;
