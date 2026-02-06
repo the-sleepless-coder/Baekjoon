@@ -1,16 +1,18 @@
 import java.util.*;
+import java.io.*;
 
 public class Main {
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        int tot = sc.nextInt();
+    public static void main(String[] args) throws IOException {
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int tot = Integer.parseInt(br.readLine());
 
         ArrayList<Person> personList = new ArrayList<>();
         for(int idx=0; idx<tot; idx++){
-
-            int age=sc.nextInt();
-            String name = sc.next();
-
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            int age=Integer.parseInt(st.nextToken());
+            String name = st.nextToken();
+            
             Person p = new Person(age, name, idx+1);
             personList.add(p);
 
