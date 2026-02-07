@@ -2,9 +2,9 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        int N= sc.nextInt();
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int N = Integer.parseInt(br.readLine());
 
         /**
         ArrayList<Integer> A = new ArrayList<>();
@@ -24,11 +24,14 @@ public class Main {
         PriorityQueue<Integer> A = new PriorityQueue<>(Collections.reverseOrder());
         PriorityQueue<Integer> B = new PriorityQueue<>();
 
+        StringTokenizer st= new StringTokenizer(br.readLine());
         for(int idx=0; idx<N; idx++){
-            A.add(sc.nextInt());
+            A.add(Integer.parseInt(st.nextToken()));
         }
+
+        st= new StringTokenizer(br.readLine());
         for(int idx=0; idx<N; idx++){
-            B.add(sc.nextInt());
+            B.add(Integer.parseInt(st.nextToken()));
         }
 
         int result = findMinByPQ(A, B, N);
