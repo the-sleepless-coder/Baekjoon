@@ -2,13 +2,14 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        int N = sc.nextInt();
-
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int N = Integer.parseInt(br.readLine());
+        
         ArrayList<Integer> arr = new ArrayList<>();
+        StringTokenizer st = new StringTokenizer(br.readLine());
         for(int idx=0; idx<N; idx++){
-            arr.add(sc.nextInt());
+            arr.add(Integer.parseInt(st.nextToken()));
         }
 
         int leftIdx = 0;
