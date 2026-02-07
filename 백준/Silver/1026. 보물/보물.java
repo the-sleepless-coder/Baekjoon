@@ -5,6 +5,8 @@ public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         int N= sc.nextInt();
+
+        /**
         ArrayList<Integer> A = new ArrayList<>();
         ArrayList<Integer> B = new ArrayList<>();
 
@@ -16,6 +18,20 @@ public class Main {
         }
 
         int result = findMinBySort(A, B);
+        System.out.println(result);
+         */
+
+        PriorityQueue<Integer> A = new PriorityQueue<>(Collections.reverseOrder());
+        PriorityQueue<Integer> B = new PriorityQueue<>();
+
+        for(int idx=0; idx<N; idx++){
+            A.add(sc.nextInt());
+        }
+        for(int idx=0; idx<N; idx++){
+            B.add(sc.nextInt());
+        }
+
+        int result = findMinByPQ(A, B, N);
         System.out.println(result);
 
 
@@ -41,19 +57,16 @@ public class Main {
     }
 
     // Priority Queue를 통해서 가장 최소값과 최대값을 하나씩 곱해서 결과 구하기.
-    static int findByPQ(ArrayList<Integer> A, ArrayList<Integer> B, int N){
-
-        // A 최대값, B최소값을 곱해서 가장 작은 값을 구한다.
-        PriorityQueue<Integer> pqA = new PriorityQueue<>(Collections.reverseOrder());
-        PriorityQueue<Integer> pqB = new PriorityQueue<>();
+    static int findMinByPQ(PriorityQueue<Integer> A, PriorityQueue<Integer> B, int N){
 
         int sum = 0;
         for(int idx=0; idx<N; idx++){
-            int a = pqA.poll();
-            int b = pqB.poll();
+            int a = A.poll();
+            int b = B.poll();
 
+            sum+=a*b;
         }
-        return 0;
+        return sum;
     }
 
 }
