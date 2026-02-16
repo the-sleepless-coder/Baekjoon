@@ -1,159 +1,131 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.*;
+import java.io.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N = Integer.parseInt(br.readLine());
 
-        StringTokenizer st= new StringTokenizer(br.readLine());
-        int[] parents = new int[N];
+        // parArr, nodeArr처럼 변수명을 의미에 맞게 정확하게 설정해주면,
+        // 헷갈리지 않고 문제를 깔끔하게 풀 수 있다.
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        int[] parArr = new int[N];
         for(int idx=0; idx<N; idx++){
-            parents[idx] = Integer.parseInt(st.nextToken());
+            parArr[idx] = Integer.parseInt(st.nextToken());
         }
 
-        // System.out.println(Arrays.toString(parents));
+        int del = Integer.parseInt(br.readLine());
 
-        int delNodeNum = Integer.parseInt(br.readLine());
-
-        // Node 배열을 형성해준다.
-        Node[] nodes = new Node[N];
+        // parArr과 nodeArr의 상태를 일치시켜준다.
         for(int idx=0; idx<N; idx++){
-            Node node = new Node(idx);
-            nodes[idx]= node;
-        }
-
-        // rootNodeIdx를 찾는다.
-        int rootNodeIdx = -999;
-        for(int idx=0; idx<N; idx++){
-            if(parents[idx]==-1){
-                rootNodeIdx = idx;
+            if(idx==del){
+                parArr[idx]=-100;
             }
         }
 
-        // 각 노드별로 부모를 찾으면 아이로 넣는다.
+        // 동일한 주소를 통해 동일한 노드를 쓸 수 있게 nodeArr를 만들어준다.
+        Node[] nodeArr = new Node[N];
         for(int idx=0; idx<N; idx++){
-            for(int i=0; i<N; i++){
-                if( idx == parents[i] ){
-                    nodes[idx].children.add(nodes[i]);
+            Node node = null;
+            if(idx!=del){
+                node = new Node(idx);
+            }else{
+                node = new Node(-100);
+
+            }
+            nodeArr[idx] = node;
+        }
+
+        // parArr에 맞게 노드를 서로 이어준다.
+        // 즉 노드 관계를 서로 이어줌으로써 트리라는 자료구조를 만들어준다.
+        Node root = null;
+        for(int idx=0; idx<N ;idx++){
+            // parArr == -1이라면, root로 지정해준다.
+            if(parArr[idx]==-1){
+                root = nodeArr[idx];
+            }
+            // 부모에 대한 자식을 넣어준다.
+            // 부모가 삭제됐거나, 자식 노드가 삭제됐다면, 노드로 반영 안해준다.
+            else if(parArr[idx] != -1 && parArr[idx] != -100){
+                int parIdx = parArr[idx];
+
+                if(nodeArr[idx].value != -100){
+                    nodeArr[parIdx].children.add(nodeArr[idx]);
                 }
             }
         }
 
-        // 루트가 없어지면, children의 숫자는 0이다.
-        int parent = parents[delNodeNum];
-        boolean isGone = false;
-        if(parent == -1){
-            isGone = true;
-        }
 
-        // 삭제할 노드의 부모를 찾고,
-        // 그 부모에서 children자체를 없애준다.
-        int result = -1;
-        if(!isGone){
-            ArrayList<Node> parentChild = nodes[parent].children;
-            int len = parentChild.size();
-            for(int idx=0; idx<len; idx++){
-                if(parentChild.get(idx).val == delNodeNum){
-                    parentChild.remove(idx);
-                    break;
-                }
-            }
-            //nodes[delNodeNum].val = -100;
-            //nodes[delNodeNum].children.clear();
-
-            // System.out.println(Arrays.toString(nodes));
-
-            boolean[] visited = new boolean[N];
-            result = dfs(nodes[rootNodeIdx], visited);
-        }else{
-            result = 0;
-        }
+        int result = Node.countLeaves(root);
 
         System.out.println(result);
 
     }
 
-    // children이라는 arrayList를 생성자에서 초기화해줘야,
-    // 값을 넣을 수 있다.
+    // 중첩 클래스로 Main 객체를 안쓰고 Node객체를 쓰려면
+    // 클래스 자체로 접근할 수 있게 static하게 만들어줘야 한다.
+
+    // static을 붙여주지 않으면 Main 객체를 통해서 Node를 만들어야하기 때문에,
+    // 중첩 클래스를 쓰는 것이 매우 번거로워짐.
     static class Node{
-        int val;
-        ArrayList<Node> children;
+        // 노드 값과,
+        // 자식을 담을 수 있는 ArrayList를 만들어준다.
+        int value;
+        ArrayList<Node> children = new ArrayList<Node>();
 
-        public Node(int val){
-            this.val = val;
-            this.children = new ArrayList<>();
+        public Node(int value){
+            this.value = value;
         }
-    }
 
-    //dfs탐색을 해서 뭐 어떻게 해야하지?
-    // 삭제된 노드가 아닐 때만 dfs탐색을 한다.
-    // children의 size가 0일 때만 값을 더한다. 즉, 자식 노드의 개수를 구한다.
-    static int dfs(Node node, boolean[] visited){
-        int childCount = 0;
+        // 루트에서 시작해서, 각 노드를 타고 들어가면서 자식 노드가 몇 개 있는지 확인한다.
+        // 즉, DFS로 트리를 탐색해서 리프 노드가 몇개 존재하는지 확인해본다.
+        // 리프 노드 판단은 children이 0개일 때로 판단한다.
+        static int countLeaves(Node node){
+            // root노드가 삭제되면,
+            // 바로 0개를 되돌려준다.
+            if(node == null)
+                return 0;
 
-        // root가 삭제될 때를 처리해준다.
-        Stack<Node> stack = new Stack<>();
-        if(node.val != -100){
+            Stack<Node> stack = new Stack<>();
             stack.add(node);
-        }
 
-        // 현재 노드가 아이가 있는지 확인한다.
-        // 아이가 없으면 count++;
-        // 아이가 있다면 dfs를 이어간다.
-        while(!stack.isEmpty()){
-            Node curr = stack.pop();
-            ArrayList<Node> children = curr.children;
-            if(children.size()==0){
-                // System.out.printf("childNum: %d \n", curr.val);
-                childCount++;
-            }else{
-                int len = children.size();
-                for(int idx=0; idx < len; idx++){
-                    // 삭제된 노드가 아닐 때만,
-                    // Stack에 더해준다.
-                    Node givNode = children.get(idx);
-                    if(givNode.val != -100) {
-                        if (!visited[givNode.val]) {
-                            stack.add(givNode);
-                            visited[givNode.val] = true;
-                        }
+            int sum = 0;
+            while(!stack.isEmpty()){
+                Node curr = stack.pop();
 
+                ArrayList<Node> children = curr.children;
+                boolean hasChild = false;
+
+                for(Node ch:children){
+                    // 삭제한 노드를 제외하고 탐색을 이어간다.
+                    if(ch.value != -100){
+                        stack.add(ch);
+                        hasChild = true;
                     }
+                }
+
+                // curr에서부터 확인을 해야 한다
+                // 그러니까 더해지는 자식 노드가 없다면,
+                // 리프노드의 개수를 늘려준다.
+                if(!hasChild){
+                    sum++;
                 }
             }
 
 
-
+            return sum;
         }
-
-        return childCount;
 
     }
 
+
 }
 
-//7
-//-1 0 0 0 1 1 1
-//1
-// 답 = 2
+// 트리에서 노드를 줬을 때,
+// 남은 트리에서 리프 노드의 개수를 구하시오.
 
-//       0
-//      /|\
-//     1 2 3
-//    /|\
-//   4 5 6
-
-
-// -1 0 0 2 2 4 4 6 6
-//        0
-//       / \
-//      1   2
-//         / \
-//        3   4
-//            /\
-//           5  6
-//          /\
-//         7  8
+//      0
+//     /  \
+//    1    2
+//   / \
+//  3   4
