@@ -1,45 +1,67 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
 public class Main {
-    public static int[] arr;
-    public static boolean[] visited;
-    public static StringBuilder sb = new StringBuilder();
-
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
 
-        int N = Integer.parseInt(st.nextToken());
-        int M = Integer.parseInt(st.nextToken());
+        int N =Integer.parseInt(st.nextToken());
+        int M =Integer.parseInt(st.nextToken());
 
-        // 조합을 추적할 배열과 방문 여부를 확인할 배열을 만든다.
-        arr = new int[M];
-        visited = new boolean[N];
+        int[] arr = new int[N];
+        int[] sel = new int[M];
+        for(int n=0;n<N; n++){
+            arr[n]=n+1;
+        }
 
-        dfs(N, M, 0);
+        StringBuilder sb = new StringBuilder();
+        int count=0;
 
-        System.out.print(sb);
+        backtrack(arr, sel, count, sb);
+
+        System.out.println(sb);
+
     }
 
-    public static void dfs(int N, int M, int depth){
-        if(depth == M){
-            for(int i=0; i<M; i++){
-                sb.append(arr[i]).append(" ");
+    // 같은 수를 중복으로 골라도 된다.
+    // 다만 수열은 중복돼서는 안된다.
+    static void backtrack(int[] arr, int[] sel, int count, StringBuilder sb){
+        int N = arr.length;
+        int M = sel.length;
+
+        // 목표 계층까지 도달했으면,
+        // 원래 실행 흐름으로 돌아간다.
+        if(count==M){
+            for(int m=0;m<M; m++){
+                sb.append(sel[m]).append(" ");
             }
+
             sb.append("\n");
+
             return;
         }
 
-        // 방문 여부 자체를 확인하지 않으면, 애초에 겹치는 값도 출력할 수 있다.
-        for(int i=0; i < N; i++){
-            arr[depth] = i+1;
-            dfs(N, M, depth+1);
+        // 마지막 계층에서는 숫자가 달라야 한다.
+        // 그래야 중복되는 수열이 안 나오게 되니까 말이야.
+
+        for(int n=0; n<N;n++){
+            sel[count] = arr[n];
+            count++;
+
+            /**
+            if(count==M){
+
+            }
+             */
+
+            backtrack(arr, sel, count, sb);
+
+            count--;
         }
 
 
 
     }
 }
+
