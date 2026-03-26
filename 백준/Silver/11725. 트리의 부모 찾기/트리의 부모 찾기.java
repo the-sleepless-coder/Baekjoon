@@ -31,8 +31,11 @@ public class Main {
         boolean[] visited = new boolean[N+1];
         int startingNum = 1;
         Map<Integer, ChildrenParent> result = new HashMap<>();
-        bfs(graph, visited, startingNum, result);
+        // bfs(graph, visited, startingNum, result);
 
+        // 1-idx기준.
+        int[] parentArr = new int[N+1];
+        bfsFixed(graph, visited, startingNum, parentArr);
         /**
         for(Map<Integer, Integer> map: result){
             for(int key: map.keySet()){
@@ -40,12 +43,15 @@ public class Main {
             }
         }
          */
-        StringBuilder sb = new StringBuilder();
-        for(int node=2; node<=N; node++){
-            ChildrenParent cp = result.get(node);
 
-            sb.append(cp.parent);
-            if(node!=N) sb.append("\n");
+        StringBuilder sb = new StringBuilder();
+        for(int child=2; child<=N; child++){
+            //ChildrenParent cp = result.get(child);
+            //sb.append(cp.parent);
+
+            int parent =  parentArr[child];
+            sb.append(parent);
+            if(child!=N) sb.append("\n");
         }
 
         System.out.println(sb);
@@ -76,6 +82,42 @@ public class Main {
 
                     ChildrenParent cp = new ChildrenParent(neigh, curr);
                     result.put(neigh, cp);
+                }
+            }
+
+
+        }
+
+    }
+
+    // 최적화 코드
+    // 굳이 새로운 클래스를 만들 필요가 없다.
+    // parentArr에 넣어서 처리하면 훨씬 더 코드가 단순해진다.
+    // 이래서 자료구조가 정말 중요하다.
+    // 무엇에 데이터를 담아서 처리하냐에 따라 시간 복잡도가 아니라,
+    // 새로운 데이터를 생성하는 데 드는 시간과 메모리를 둘다 아낄 수 있으니까 말이야.
+    static void bfsFixed(ArrayList<ArrayList<Integer>>graph, boolean[] visited, int startingNum, int[] parentArr){
+
+        Queue<Integer> q = new LinkedList<>();
+        q.add(startingNum);
+        visited[startingNum]= true;
+
+        while(!q.isEmpty()){
+
+            int curr = q.poll();
+
+            // 아예 꺼내기 편하게,
+            // 자식, 부모 관계를 Map에 넣고 그것을 result배열에 넣어준다.
+            Node node = new Node(curr);
+            ArrayList<Integer> neighbors = graph.get(curr);
+            ArrayList<Integer> children = node.children;
+            for(int neigh:neighbors){
+                if(!visited[neigh]){
+                    q.add(neigh);
+                    visited[neigh] = true;
+                    // children.add(neigh);
+
+                    parentArr[neigh] = curr;
                 }
             }
 
