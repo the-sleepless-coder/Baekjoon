@@ -72,7 +72,7 @@ public class Main {
                 if(!visited[neigh]){
                     q.add(neigh);
                     visited[neigh] = true;
-                    children.add(neigh);
+                    // children.add(neigh);
 
                     ChildrenParent cp = new ChildrenParent(neigh, curr);
                     result.put(neigh, cp);
