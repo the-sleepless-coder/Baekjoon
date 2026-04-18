@@ -4,128 +4,80 @@ import java.io.*;
 public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
         int N = Integer.parseInt(br.readLine());
 
-        // parArr, nodeArr처럼 변수명을 의미에 맞게 정확하게 설정해주면,
-        // 헷갈리지 않고 문제를 깔끔하게 풀 수 있다.
         StringTokenizer st = new StringTokenizer(br.readLine());
-        int[] parArr = new int[N];
-        for(int idx=0; idx<N; idx++){
-            parArr[idx] = Integer.parseInt(st.nextToken());
+        int[] arr = new int[N];
+        int root = -1;
+        for(int n=0; n<N; n++){
+            arr[n] = Integer.parseInt(st.nextToken());
+            if(arr[n]==-1) root = n;
         }
 
-        int del = Integer.parseInt(br.readLine());
+        int d = Integer.parseInt(br.readLine());
 
-        // parArr과 nodeArr의 상태를 일치시켜준다.
-        for(int idx=0; idx<N; idx++){
-            if(idx==del){
-                parArr[idx]=-100;
-            }
+        ArrayList<ArrayList<Integer>> graph = new ArrayList<>();
+        for(int n=0; n<N; n++){
+            graph.add(new ArrayList<>());
         }
 
-        // 동일한 주소를 통해 동일한 노드를 쓸 수 있게 nodeArr를 만들어준다.
-        Node[] nodeArr = new Node[N];
-        for(int idx=0; idx<N; idx++){
-            Node node = null;
-            if(idx!=del){
-                node = new Node(idx);
-            }else{
-                node = new Node(-100);
-
-            }
-            nodeArr[idx] = node;
+        // 루트를 제외하고 부모-자식 관계 형성하기.
+        for(int c=0; c<N; c++){
+            int parent = arr[c];
+            if(parent!=-1) graph.get(parent).add(c);
         }
 
-        // parArr에 맞게 노드를 서로 이어준다.
-        // 즉 노드 관계를 서로 이어줌으로써 트리라는 자료구조를 만들어준다.
-        Node root = null;
-        for(int idx=0; idx<N ;idx++){
-            // parArr == -1이라면, root로 지정해준다.
-            if(parArr[idx]==-1){
-                root = nodeArr[idx];
-            }
-            // 부모에 대한 자식을 넣어준다.
-            // 부모가 삭제됐거나, 자식 노드가 삭제됐다면, 노드로 반영 안해준다.
-            else if(parArr[idx] != -1 && parArr[idx] != -100){
-                int parIdx = parArr[idx];
+        // System.out.println(graph);
 
-                if(nodeArr[idx].value != -100){
-                    nodeArr[parIdx].children.add(nodeArr[idx]);
-                }
-            }
+        boolean[] isNode = new boolean[N];
+        for(int n=0; n<N; n++){
+            isNode[n]= true;
         }
 
+        checkLinked(graph, d, isNode);
+        // System.out.println(Arrays.toString(isNode));
 
-        int result = Node.countLeaves(root);
+        int result = dfs(graph, root, isNode);
 
         System.out.println(result);
 
     }
 
-    // 중첩 클래스로 Main 객체를 안쓰고 Node객체를 쓰려면
-    // 클래스 자체로 접근할 수 있게 static하게 만들어줘야 한다.
+    // 어차피 트리는 그래프의 특수한 형태이니,
+    // 부모-자식 관계가 형성 돼 있고 사이클이 없는 형태의 자료구조이다.
+    // 그래서 그래프를 dfs로 돌면서 연결 돼 있는 노드가 0개인 노드의 개수를 세면 그만이다.
+    static int dfs(ArrayList<ArrayList<Integer>> graph, int node, boolean[] isNode){
+        if(!isNode[node]) return 0;
 
-    // static을 붙여주지 않으면 Main 객체를 통해서 Node를 만들어야하기 때문에,
-    // 중첩 클래스를 쓰는 것이 매우 번거로워짐.
-    static class Node{
-        // 노드 값과,
-        // 자식을 담을 수 있는 ArrayList를 만들어준다.
-        int value;
-        ArrayList<Node> children = new ArrayList<Node>();
+        int sum =0;
 
-        public Node(int value){
-            this.value = value;
-        }
-
-        // 루트에서 시작해서, 각 노드를 타고 들어가면서 자식 노드가 몇 개 있는지 확인한다.
-        // 즉, DFS로 트리를 탐색해서 리프 노드가 몇개 존재하는지 확인해본다.
-        // 리프 노드 판단은 children이 0개일 때로 판단한다.
-        static int countLeaves(Node node){
-            // root노드가 삭제되면,
-            // 바로 0개를 되돌려준다.
-            if(node == null)
-                return 0;
-
-            Stack<Node> stack = new Stack<>();
-            stack.add(node);
-
-            int sum = 0;
-            while(!stack.isEmpty()){
-                Node curr = stack.pop();
-
-                ArrayList<Node> children = curr.children;
-                boolean hasChild = false;
-
-                for(Node ch:children){
-                    // 삭제한 노드를 제외하고 탐색을 이어간다.
-                    if(ch.value != -100){
-                        stack.add(ch);
-                        hasChild = true;
-                    }
-                }
-
-                // curr에서부터 확인을 해야 한다
-                // 그러니까 더해지는 자식 노드가 없다면,
-                // 리프노드의 개수를 늘려준다.
-                if(!hasChild){
-                    sum++;
-                }
+        // 한 계층씩 노드를 타고 들어가서, 재귀 방식으로 DFS를 실행한다.
+        // 자식 노드가 0개일 때만 1을 더하고,
+        // 각 계층 안에 있는 sum을 하나의 계층씩 올라가면서 더한다.
+        // 그래서 최종적인 sum에 합산하면 전체 리프 노드 자식을 리프에서부터 부모까지 다 합산해서 알 수 있다.
+        ArrayList<Integer> neighbors = graph.get(node);
+        int childNum = 0;
+        for(int neigh: neighbors){
+            if(isNode[neigh]){
+                childNum++;
+                sum+=dfs(graph, neigh, isNode);
             }
-
-
-            return sum;
         }
 
+        if(childNum==0) return 1;
+
+        return sum;
     }
 
+    // 연결 돼 있는 노드를 재귀적으로 모두 false 처리해준다.
+    static void checkLinked(ArrayList<ArrayList<Integer>> graph, int d, boolean[] isNode){
+        ArrayList<Integer> neighbors = graph.get(d);
+        isNode[d] = false;
+
+        for(int neigh: neighbors){
+            checkLinked(graph, neigh, isNode);
+        }
+    }
 
 }
-
-// 트리에서 노드를 줬을 때,
-// 남은 트리에서 리프 노드의 개수를 구하시오.
-
-//      0
-//     /  \
-//    1    2
-//   / \
-//  3   4
