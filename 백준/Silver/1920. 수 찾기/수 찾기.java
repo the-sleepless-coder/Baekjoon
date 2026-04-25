@@ -1,59 +1,77 @@
 import java.util.*;
+import java.io.*;
+
 public class Main {
-    // 이분탐색을 통해서 주어진 배열에, 다른 배열의 숫자가 있는지 확인한다.
-    static int[] arr;
-    static int[] sel;
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        int N = sc.nextInt();
+        int N = Integer.parseInt(br.readLine());
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
-        arr = new int[N];
-        for(int i = 0; i < N; i++){
-            arr[i] = sc.nextInt();
+
+        int[] arr = new int[N];
+        for(int n=0; n<N; n++){
+            arr[n] =Integer.parseInt(st.nextToken());
         }
 
         Arrays.sort(arr);
 
-        // System.out.println(Arrays.toString(arr));
+        // 각 숫자가 위 배열에 존재하는지 확인
+        int M = Integer.parseInt(br.readLine());
+        st = new StringTokenizer(br.readLine());
 
-
-        int M = sc.nextInt();
-        sel = new int[M];
-        for(int i=0; i<M; i++){
-            sel[i] = sc.nextInt();
+        int[] find = new int[M];
+        for(int m=0; m<M; m++){
+            find[m]=Integer.parseInt(st.nextToken());
         }
+
+
+        System.out.println(findNum(find, arr));
+
+
+    }
+
+    // 이분 탐색을 이용한 탐색
+    // start, end 인덱스를 활용해,
+    // 이분 탐색을 통한 숫자 탐색
+    
+    // 시간 복잡도: N*logN
+    static String findNum(int[] find, int[]arr) {
+        int M = find.length;
+        int N = arr.length;
 
         StringBuilder sb = new StringBuilder();
-        for(int i=0 ;i<M; i++){
-            sb.append(binary(sel[i])).append("\n");
-        }
+        for (int m = 0; m < M; m++) {
+            int num = find[m];
 
-        System.out.println(sb);
+            int start = 0;
+            int end = N - 1;
 
-    }
+            boolean found = false;
+            while (start <= end) {
+                int mid = (start + end) / 2;
 
-    static int binary(int num){
-        int l = 0;
-        int r = arr.length - 1;
-        int mid = -1;
-        // r < l
-        // 그러니까 l과 r의 순서가 바뀔 때, 해당 배열에 주어진 숫자가 없다는 것을 의미한다.
-        boolean match = false;
-        while( l <= r ){
-            mid = (l+r)/2;
-
-            if (arr[mid] == num){
-                match = true;
-                return 1;
-            }else if(arr[mid] < num){
-                l = mid + 1;
-            }else if(arr[mid] > num){
-                r = mid - 1;
+                if (arr[mid] == num) {
+                    //System.out.println(mid);
+                    sb.append(1).append("\n");
+                    found = true;
+                    break;
+                }
+                // 더 작은 부분 탐색
+                else if (num < arr[mid]) {
+                    end = mid - 1;
+                }//더 큰 부분을 탐색
+                else if (arr[mid] < num) {
+                    start = mid + 1;
+                }
             }
+
+            if(!found) sb.append(0).append("\n");
         }
 
-
-        return 0;
+        return String.valueOf(sb);
     }
+
+
+
 }
