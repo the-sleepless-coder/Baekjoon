@@ -1,94 +1,101 @@
 import java.util.*;
 
 class Solution {
+    static String CODE, DATE, MAXIMUM, REMAIN;
+    
     public int[][] solution(int[][] data, String ext, int val_ext, String sort_by) {
+        CODE = "code";
+        DATE = "date";
+        MAXIMUM = "maximum";
+        REMAIN = "remain";
         
-        // ext 값이 val_ext보다 작은 데이터만 뽑은 후.
-        // sort_by에 해당하는 값을 기준으로 오름차순 정렬해서 return 한다.
-        int len = data.length;
-        
-        PriorityQueue<Data> pq = new PriorityQueue<>(
-            (a, b) -> {
-                if(sort_by.equals("remain"))
+        // 코드번호, 제조일, 최대수량, 현재 수량
+        // ext, val_ext 기준 조건, 기준 값.
+        // sort_by 조건 정렬 조건.
+        PriorityQueue<Data> pq = new PriorityQueue<>
+        (
+            // Comparator 조건을 내가 직접 작성.
+            (d1, d2) ->
+            {
+                
+                if(sort_by.equals(DATE))
                 {
-                    return Integer.compare(a.remain, b.remain);    
-                }else if(sort_by.equals("code"))
+                    return d1.date - d2.date;    
+                }
+                else if(sort_by.equals(CODE))
                 {
-                    return Integer.compare(a.code, b.code);
-                }else if(sort_by.equals("maximum"))
+                    return d1.code - d2.code;
+                }
+                else if(sort_by.equals(MAXIMUM))
                 {
-                    return Integer.compare(a.maximum,b.maximum);
-                }else if(sort_by.equals("date"))
+                    return d1.maximum - d2.maximum;
+                }else if(sort_by.equals(REMAIN))
                 {
-                    return Integer.compare(a.date, b.date);
+                    return d1.remain - d2.remain;
                 }
                 
                 return 0;
             }
         );
+            
+        // data에 있는 데이터 중,
+        // val_ext보다 작은 것을 pq에 더해준다.
+        int len = data.length;
         
-        for(int i=0; i<len; i++)
+        for(int i=0; i<len ; i++)
         {
-            int[] temp = data[i];
-            Data tdata = new Data(temp[0], temp[1], temp[2], temp[3]);
+            int code = data[i][0];
+            int date = data[i][1];
+            int maximum = data[i][2];
+            int remain = data[i][3];
             
-            int idx = -1;
-            if(ext.equals("code"))
+            if(ext.equals(CODE))
             {
-                idx=0;
-            }else if(ext.equals("date"))
-            {
-                idx=1;
-            }else if(ext.equals("maximum"))
-            {
-                idx=2;
-            }else if(ext.equals("remain"))
-            {
-                idx = 3;
+                if(val_ext<code) continue;
             }
-            
-            int std = temp[idx];
-            if(std < val_ext)
+            else if(ext.equals(DATE))
             {
-                pq.add(tdata);
+                if(val_ext<date) continue;
             }
+            else if(ext.equals(MAXIMUM))
+            {
+                if(val_ext<maximum) continue;
+            }
+            else if(ext.equals(REMAIN))
+            {
+                if(val_ext<remain) continue;
+            }
+                
+            Data d = new Data(code, date, maximum, remain);
+            pq.add(d);
         }
         
-        // 답을 담기 위한 임시 변수.
-        ArrayList<int[]> result = new ArrayList<>();
-        int arrIdx = 0;
+        int size = pq.size();
+        int[][] result = new int[size][4];
+        int resultIdx = 0;
         while(!pq.isEmpty())
         {
-            Data tdata = pq.poll();    
-            int[] temp = new int[4];
-            temp[0] = tdata.code;
-            temp[1] = tdata.date;
-            temp[2] = tdata.maximum;
-            temp[3] = tdata.remain;
+            Data d= pq.poll();
+            int code = d.code;
+            int date = d.date;
+            int maximum = d.maximum;
+            int remain = d.remain;
             
-            result.add(temp);
+            result[resultIdx] = new int[]{code, date, maximum, remain};
+            resultIdx++;
         }
         
-        // 실제 반환.
-        int size= result.size();
-        
-        int[][] answer = new int[size][4];
-        for(int i=0; i<size; i++)
-        {
-            answer[i] = result.get(i);
-        }
-        
-        return answer;
-    
+        return result;
     }
-    
+
+    // Data를 담기 위한 객체를 생성.    
     static class Data
     {
         int code;
         int date;
-        int maximum; 
+        int maximum;
         int remain;
-        
+
         public Data(int code, int date, int maximum, int remain)
         {
             this.code = code;
@@ -96,5 +103,6 @@ class Solution {
             this.maximum = maximum;
             this.remain = remain;
         }
+
     }
-}
+}    
